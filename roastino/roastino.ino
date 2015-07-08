@@ -72,25 +72,25 @@ void loop()
 
 void CalculateDesiredTemperature()
 {  
-  if(digitalRead(PIN_Switch_4))
+  if(!digitalRead(PIN_Switch_4))
   {
     ElementPID_Setpoint = 200;
     return;
   }
   
-  if(digitalRead(PIN_Switch_3))
+  if(!digitalRead(PIN_Switch_3))
   {
     ElementPID_Setpoint = 150;
     return;
   }
   
-  if(digitalRead(PIN_Switch_2))
+  if(!digitalRead(PIN_Switch_2))
   {
     ElementPID_Setpoint = 100;
     return;
   }
   
-  if(digitalRead(PIN_Switch_1))
+  if(!digitalRead(PIN_Switch_1))
   {
     ElementPID_Setpoint = 50;
     return;
