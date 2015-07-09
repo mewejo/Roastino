@@ -70,34 +70,34 @@ void loop()
   ControlTemperature();
 }
 
-void CalculateDesiredTemperature()
+boolean CalculateDesiredTemperature()
 {  
   if(!digitalRead(PIN_Switch_4))
   {
     ElementPID_Setpoint = 200;
-    return;
+    return true;
   }
   
   if(!digitalRead(PIN_Switch_3))
   {
     ElementPID_Setpoint = 150;
-    return;
+    return true;
   }
   
   if(!digitalRead(PIN_Switch_2))
   {
     ElementPID_Setpoint = 100;
-    return;
+    return true;
   }
   
   if(!digitalRead(PIN_Switch_1))
   {
     ElementPID_Setpoint = 50;
-    return;
+    return true;
   }
   
-  ElementPID_Setpoint = 0;
-  return;
+  ElementPID_Setpoint = Thermocouple_Chamber.readCelsius();
+  return false;
 }
 
 void Element(boolean State)
@@ -116,8 +116,7 @@ void Element(boolean State)
 
 void ControlTemperature()
 {
-  CalculateDesiredTemperature();
-  if(!ElementPID_Setpoint)
+  if(!CalculateDesiredTemperature());
   {
     Element(false);
     return;
