@@ -9,7 +9,8 @@ const int PIN_Switch_1 = 1;
 const int PIN_Switch_2 = 2;
 const int PIN_Switch_3 = 3;
 const int PIN_Switch_4 = 4;
-const int PIN_LED_Status = 5;
+const int PIN_LED_Status_Blue = 5;
+const int PIN_LED_Status_Red = 6;
 
 const int PIN_Thermocouple_Chamber_DO = 9;
 const int PIN_Thermocouple_Chamber_CS = 10;
@@ -105,12 +106,12 @@ void Element(boolean State)
   if(State)
   {
     digitalWrite(PIN_Element, HIGH);
-    digitalWrite(PIN_LED_Status, HIGH);
+    digitalWrite(PIN_LED_Status_Red, HIGH);
   }
   else
   {
     digitalWrite(PIN_Element, LOW);
-    digitalWrite(PIN_LED_Status, LOW);
+    digitalWrite(PIN_LED_Status_Red, LOW);
   }
 }
 
@@ -145,5 +146,5 @@ void ControlTemperature()
     Element(false);
   }
   
-  delay(500);
+  delay(200);
 }
