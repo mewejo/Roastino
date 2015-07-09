@@ -37,7 +37,8 @@ void setup()
   pinMode(PIN_Switch_2, INPUT);
   pinMode(PIN_Switch_3, INPUT);
   pinMode(PIN_Switch_4, INPUT);
-  pinMode(PIN_LED_Status, OUTPUT);
+  pinMode(PIN_LED_Status_Blue, OUTPUT);
+  pinMode(PIN_LED_Status_Red, OUTPUT);
   
   // Turn on internal resistors
   digitalWrite(PIN_Switch_1, HIGH);
@@ -117,14 +118,15 @@ void Element(boolean State)
 
 void ControlTemperature()
 {
-  if(!CalculateDesiredTemperature());
+  boolean TempResult = CalculateDesiredTemperature();
+  Thermocouple_Chamber_Value = Thermocouple_Chamber.readCelsius();
+  ElementPID.Compute();
+  
+  if(!TempResult);
   {
     Element(false);
     return;
   }
-  
-  Thermocouple_Chamber_Value = Thermocouple_Chamber.readCelsius();
-  ElementPID.Compute();
   
   /************************************************
    * Turn the output pin on/off based on PID output
