@@ -4,13 +4,14 @@
 const int analogInPin = A0;
 
 // Pins
-const int PIN_Element = 0;
+const int PIN_Element = 0; // REAL 0
 const int PIN_Switch_1 = 1;
 const int PIN_Switch_2 = 2;
 const int PIN_Switch_3 = 3;
 const int PIN_Switch_4 = 4;
 const int PIN_LED_Status_Blue = 5;
 const int PIN_LED_Status_Red = 6;
+const int PIN_Element_Ground = 7;
 
 const int PIN_Thermocouple_Chamber_DO = 9;
 const int PIN_Thermocouple_Chamber_CS = 10;
@@ -30,21 +31,21 @@ int ElementPID_WindowSize = 2000;
 unsigned long ElementPID_WindowStartTime;
 
 void setup()
-{  
-  // Setup the pins
+{
+  //Serial.begin(9600);
+  
+  // Element pins
   pinMode(PIN_Element, OUTPUT);
-  pinMode(PIN_Switch_1, INPUT);
-  pinMode(PIN_Switch_2, INPUT);
-  pinMode(PIN_Switch_3, INPUT);
-  pinMode(PIN_Switch_4, INPUT);
+  pinMode(PIN_Element_Ground, OUTPUT);
+  digitalWrite(PIN_Element_Ground, LOW);
+
+  // Setup the pins
+  pinMode(PIN_Switch_1, INPUT_PULLUP);
+  pinMode(PIN_Switch_2, INPUT_PULLUP);
+  pinMode(PIN_Switch_3, INPUT_PULLUP);
+  pinMode(PIN_Switch_4, INPUT_PULLUP);
   pinMode(PIN_LED_Status_Blue, OUTPUT);
   pinMode(PIN_LED_Status_Red, OUTPUT);
-  
-  // Turn on internal resistors
-  digitalWrite(PIN_Switch_1, HIGH);
-  digitalWrite(PIN_Switch_2, HIGH);
-  digitalWrite(PIN_Switch_3, HIGH);
-  digitalWrite(PIN_Switch_4, HIGH);
   
   // Pins for Thermocouple
   pinMode(PIN_Thermocouple_Chamber_VCC, OUTPUT);
@@ -69,37 +70,48 @@ void setup()
 
 void loop()
 {
+  /*Serial.print("Temp: ");
+  Serial.println(Thermocouple_Chamber_Value);
+  
+  Serial.print("Target: ");
+  Serial.println(ElementPID_Setpoint);*/
+    
   ControlTemperature();
 }
 
-boolean CalculateDesiredTemperature()
+void CalculateDesiredTemperature()
 {  
   if(!digitalRead(PIN_Switch_4))
   {
     ElementPID_Setpoint = 200;
-    return true;
+    digitalWrite(PIN_LED_Status_Blue, HIGH);
+    return;
   }
   
   if(!digitalRead(PIN_Switch_3))
   {
     ElementPID_Setpoint = 150;
-    return true;
+    digitalWrite(PIN_LED_Status_Blue, HIGH);
+    return;
   }
   
   if(!digitalRead(PIN_Switch_2))
   {
     ElementPID_Setpoint = 100;
-    return true;
+    digitalWrite(PIN_LED_Status_Blue, HIGH);
+    return;
   }
   
   if(!digitalRead(PIN_Switch_1))
   {
     ElementPID_Setpoint = 50;
-    return true;
+    digitalWrite(PIN_LED_Status_Blue, HIGH);
+    return;
   }
   
-  ElementPID_Setpoint = Thermocouple_Chamber.readCelsius();
-  return false;
+  ElementPID_Setpoint = 0;
+  digitalWrite(PIN_LED_Status_Blue, LOW);
+  return;
 }
 
 void Element(boolean State)
@@ -118,15 +130,18 @@ void Element(boolean State)
 
 void ControlTemperature()
 {
-  boolean TempResult = CalculateDesiredTemperature();
-  Thermocouple_Chamber_Value = Thermocouple_Chamber.readCelsius();
-  ElementPID.Compute();
+  delay(500);
   
-  if(!TempResult);
+  CalculateDesiredTemperature();
+  Thermocouple_Chamber_Value = Thermocouple_Chamber.readCelsius();
+  
+  if(!ElementPID_Setpoint)
   {
     Element(false);
     return;
   }
+  
+  ElementPID.Compute();  
   
   /************************************************
    * Turn the output pin on/off based on PID output
@@ -146,6 +161,4 @@ void ControlTemperature()
   {
     Element(false);
   }
-  
-  delay(200);
 }
